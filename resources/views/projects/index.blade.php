@@ -1,56 +1,48 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="flex items-center justify-between gap-4">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">Projectes</h2>
+            <h2 class="text-xl font-semibold leading-tight text-gray-800">Projects</h2>
             <a href="{{ route('projects.create') }}"
-                class="px-4 py-2 bg-indigo-600 text-white text-sm font-semibold rounded-lg hover:bg-indigo-700 transition">
-                + Nou projecte
+                class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-indigo-700">
+                + New project
             </a>
         </div>
     </x-slot>
 
     <div class="py-8">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-
-            @if(session('success'))
-                <div class="mb-6 bg-green-50 border border-green-200 text-green-700 rounded-lg px-4 py-3 text-sm">
-                    {{ session('success') }}
-                </div>
-            @endif
-
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             @if($projects->isEmpty())
-                <div class="bg-white rounded-xl border border-gray-200 p-16 text-center text-gray-400">
-                    <p class="text-lg mb-4">Encara no hi ha projectes.</p>
-                    <a href="{{ route('projects.create') }}" class="text-indigo-600 hover:underline">Crea el primer projecte</a>
+                <div class="rounded-xl border border-gray-200 bg-white p-16 text-center text-gray-400">
+                    <p class="mb-4 text-lg">No projects found yet.</p>
+                    <a href="{{ route('projects.create') }}" class="text-indigo-600 hover:underline">Create your first project</a>
                 </div>
             @else
                 <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
                     @foreach($projects as $project)
-                        <div class="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition flex flex-col">
-                            <div class="p-6 flex-1">
-                                <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ $project->name }}</h3>
-                                <p class="text-sm text-gray-500 line-clamp-3">
-                                    {{ $project->description ?? 'Sense descripció.' }}
+                        <div class="flex flex-col rounded-xl border border-gray-200 bg-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
+                            <div class="flex-1 p-6">
+                                <h3 class="mb-2 text-lg font-semibold text-gray-900">{{ $project->name }}</h3>
+                                <p class="line-clamp-3 text-sm text-gray-500">
+                                    {{ $project->description ?? 'No description provided.' }}
                                 </p>
                             </div>
-                            <div class="px-6 py-4 border-t border-gray-100 flex items-center justify-between gap-4">
+                            <div class="flex flex-wrap items-center justify-between gap-4 border-t border-gray-100 px-6 py-4">
                                 <span class="text-xs text-gray-400">
-                                    @if(auth()->user()->isAdmin())
-                                        {{ $project->user->name }} ·
+                                    @if(auth()->user()->is_admin)
+                                        {{ optional($project->user)->name ?? 'Unknown owner' }} &middot;
                                     @endif
                                     {{ $project->created_at->format('d/m/Y') }}
                                 </span>
-                                <div class="flex gap-3">
-                                    <a href="{{ route('projects.show', $project) }}" class="text-sm text-indigo-600 hover:underline">Veure</a>
+                                <div class="flex flex-wrap items-center gap-3">
+                                    <a href="{{ route('projects.show', $project) }}" class="text-sm text-indigo-600 hover:underline">View</a>
                                     @can('update', $project)
-                                        <a href="{{ route('projects.edit', $project) }}" class="text-sm text-gray-500 hover:underline">Editar</a>
+                                        <a href="{{ route('projects.edit', $project) }}" class="text-sm text-gray-500 hover:underline">Edit</a>
                                     @endcan
                                     @can('delete', $project)
-                                        <form action="{{ route('projects.destroy', $project) }}" method="POST"
-                                            onsubmit="return confirm('Eliminar aquest projecte?')">
+                                        <form action="{{ route('projects.destroy', $project) }}" method="POST" onsubmit="return confirm('Delete this project?')">
                                             @csrf
                                             @method('DELETE')
-                                            <button class="text-sm text-red-500 hover:underline">Eliminar</button>
+                                            <button class="text-sm text-red-500 hover:underline">Delete</button>
                                         </form>
                                     @endcan
                                 </div>

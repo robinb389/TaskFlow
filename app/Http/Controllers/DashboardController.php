@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Project;
+use App\Models\Tag;
 use App\Models\Task;
 use App\Models\User;
 
@@ -12,20 +13,18 @@ class DashboardController extends Controller
     {
         $user = auth()->user();
 
-        if ($user->isAdmin()) {
-            $data = [
+        if ($user->is_admin) {
+            return view('dashboard', [
+                'totalUsers' => User::count(),
                 'totalProjects' => Project::count(),
-                'totalTasks'    => Task::count(),
-                'totalUsers'    => User::count(),
-                'projects'      => Project::with('user')->latest()->take(5)->get(),
-            ];
-        } else {
-            $data = [
-                'projects' => $user->projects()->withCount('tasks')->latest()->get(),
-                'tasks'    => $user->tasks()->with('project')->latest()->take(5)->get(),
-            ];
+                'totalTasks' => Task::count(),
+                'totalTags' => Tag::count(),
+            ]);
         }
 
-        return view('dashboard', $data);
+        return view('dashboard', [
+            'projectCount' => $user->projects()->count(),
+            'taskCount' => $user->tasks()->count(),
+        ]);
     }
 }

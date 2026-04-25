@@ -1,3 +1,27 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+    body {
+        @apply text-slate-800;
+    }
+
+    input,
+    select,
+    textarea {
+        @apply text-slate-900 placeholder-slate-500;
+    }
+}
+
+@layer components {
+    .ui-card {
+        @apply rounded-xl border border-slate-200 bg-white shadow-sm;
+    }
+}
+
+@layer utilities {
+    .text-gray-400 {
+        @apply text-gray-500;
+    }
+}

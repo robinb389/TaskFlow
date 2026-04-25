@@ -1,69 +1,68 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="flex items-center justify-between gap-4">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">Tasques</h2>
+            <h2 class="text-xl font-semibold leading-tight text-gray-800">Tasks</h2>
             <a href="{{ route('tasks.create') }}"
-                class="px-4 py-2 bg-indigo-600 text-white text-sm font-semibold rounded-lg hover:bg-indigo-700 transition">
-                + Nova tasca
+                class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-indigo-700">
+                + New task
             </a>
         </div>
     </x-slot>
 
     <div class="py-8">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-
-            @if(session('success'))
-                <div class="mb-6 bg-green-50 border border-green-200 text-green-700 rounded-lg px-4 py-3 text-sm">
-                    {{ session('success') }}
-                </div>
-            @endif
-
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <form method="GET" action="{{ route('tasks.index') }}"
-                class="bg-white rounded-xl border border-gray-200 shadow-sm p-4 mb-6 flex flex-wrap gap-4 items-end">
-                <div>
-                    <label class="block text-xs font-medium text-gray-500 mb-1">Estat</label>
-                    <select name="status" class="rounded-lg border-gray-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
-                        <option value="">Tots</option>
-                        <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>Pendent</option>
-                        <option value="in_progress" {{ request('status') === 'in_progress' ? 'selected' : '' }}>En progrés</option>
-                        <option value="done" {{ request('status') === 'done' ? 'selected' : '' }}>Feta</option>
+                class="mb-6 flex flex-wrap items-end gap-4 rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+                <div class="flex flex-col">
+                    <label class="mb-1 block text-xs font-medium text-gray-500">Status</label>
+                    <select name="status" class="h-11 rounded-lg border-gray-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
+                        <option value="">All</option>
+                        @foreach($statuses as $status)
+                            <option value="{{ $status }}" {{ request('status') === $status ? 'selected' : '' }}>
+                                {{ str($status)->replace('_', ' ')->title() }}
+                            </option>
+                        @endforeach
                     </select>
                 </div>
-                <div>
-                    <label class="block text-xs font-medium text-gray-500 mb-1">Etiqueta</label>
-                    <select name="tag" class="rounded-lg border-gray-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
-                        <option value="">Totes</option>
+                <div class="flex flex-col">
+                    <label class="mb-1 block text-xs font-medium text-gray-500">Tag</label>
+                    <select name="tag" class="h-11 rounded-lg border-gray-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
+                        <option value="">All</option>
                         @foreach($tags as $tag)
-                            <option value="{{ $tag->id }}" {{ request('tag') == $tag->id ? 'selected' : '' }}>
+                            <option value="{{ $tag->id }}" {{ (string) request('tag') === (string) $tag->id ? 'selected' : '' }}>
                                 {{ $tag->name }}
                             </option>
                         @endforeach
                     </select>
                 </div>
-                <button type="submit"
-                    class="px-4 py-2 bg-gray-800 text-white text-sm font-medium rounded-lg hover:bg-gray-900 transition">
-                    Filtrar
-                </button>
+                <div class="flex flex-col">
+                    <label class="mb-1 block text-xs font-medium opacity-0">Filter</label>
+                    <button type="submit"
+                        class="h-11 rounded-lg bg-gray-800 px-4 py-2 text-sm font-medium text-white transition hover:bg-gray-900">
+                        Apply filters
+                    </button>
+                </div>
                 @if(request('status') || request('tag'))
-                    <a href="{{ route('tasks.index') }}" class="text-sm text-gray-400 hover:underline self-center">Netejar</a>
+                    <a href="{{ route('tasks.index') }}" class="self-center text-sm text-gray-400 hover:underline">Clear</a>
                 @endif
             </form>
 
             @if($tasks->isEmpty())
-                <div class="bg-white rounded-xl border border-gray-200 p-16 text-center text-gray-400">
-                    No s'han trobat tasques.
+                <div class="rounded-xl border border-gray-200 bg-white p-16 text-center text-gray-400">
+                    No tasks found.
                 </div>
             @else
-                <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-                    <table class="min-w-full divide-y divide-gray-200">
+                <div class="overflow-x-auto rounded-xl border border-gray-200 bg-white shadow-sm">
+                    <table class="min-w-[980px] w-full divide-y divide-gray-200">
                         <thead class="bg-gray-50">
                             <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Títol</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Projecte</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Estat</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Etiquetes</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Data límit</th>
-                                <th class="px-6 py-3"></th>
+                                <th class="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500">Title</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500">Project</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500">Assigned to</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500">Status</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500">Tags</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500">Due date</th>
+                                <th class="px-6 py-3 text-right text-xs font-medium uppercase text-gray-500">Actions</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-100">
@@ -74,48 +73,49 @@
                                         'in_progress' => 'bg-blue-50 text-blue-700',
                                         'done' => 'bg-green-50 text-green-700',
                                     ];
-                                    $statusLabels = [
-                                        'pending' => 'Pendent',
-                                        'in_progress' => 'En progrés',
-                                        'done' => 'Feta',
-                                    ];
                                 @endphp
-                                <tr class="hover:bg-gray-50 transition">
-                                    <td class="px-6 py-4">
-                                        <a href="{{ route('tasks.show', $task) }}" class="font-medium text-gray-900 hover:text-indigo-600">
+                                <tr class="transition hover:bg-gray-50">
+                                    <td class="px-6 py-4 align-middle">
+                                        <a href="{{ route('tasks.show', $task) }}" class="block font-medium text-gray-900 hover:text-indigo-600">
                                             {{ $task->title }}
                                         </a>
                                     </td>
-                                    <td class="px-6 py-4 text-sm text-gray-500">{{ $task->project->name }}</td>
-                                    <td class="px-6 py-4">
-                                        <span class="text-xs px-2 py-1 rounded-full {{ $statusColors[$task->status] }}">
-                                            {{ $statusLabels[$task->status] }}
+                                    <td class="px-6 py-4 align-middle text-sm text-gray-500">
+                                        {{ optional($task->project)->name ?? 'No project' }}
+                                    </td>
+                                    <td class="px-6 py-4 align-middle text-sm text-gray-500">
+                                        {{ optional($task->user)->name ?? 'Unassigned' }}
+                                    </td>
+                                    <td class="px-6 py-4 align-middle">
+                                        <span class="rounded-full px-2 py-1 text-xs {{ $statusColors[$task->status] }}">
+                                            {{ str($task->status)->replace('_', ' ')->title() }}
                                         </span>
                                     </td>
-                                    <td class="px-6 py-4">
-                                        <div class="flex gap-1 flex-wrap">
-                                            @foreach($task->tags as $tag)
-                                                <span class="inline-block px-2 py-0.5 rounded-full text-white text-xs"
-                                                    style="background-color: {{ $tag->color }}">
+                                    <td class="px-6 py-4 align-middle">
+                                        <div class="flex flex-wrap gap-1">
+                                            @forelse($task->tags as $tag)
+                                                <span class="inline-block rounded-full border border-black/10 px-2 py-0.5 text-xs font-semibold"
+                                                    style="background-color: {{ $tag->color }}; color: {{ $tag->text_color }};">
                                                     {{ $tag->name }}
                                                 </span>
-                                            @endforeach
+                                            @empty
+                                                <span class="text-sm text-gray-400">-</span>
+                                            @endforelse
                                         </div>
                                     </td>
-                                    <td class="px-6 py-4 text-sm text-gray-400">
-                                        {{ $task->due_date ? \Carbon\Carbon::parse($task->due_date)->format('d/m/Y') : '—' }}
+                                    <td class="px-6 py-4 align-middle text-sm text-gray-400">
+                                        {{ $task->due_date ? $task->due_date->format('d/m/Y') : '-' }}
                                     </td>
-                                    <td class="px-6 py-4 text-right">
-                                        <div class="flex justify-end gap-3">
+                                    <td class="px-6 py-4 align-middle text-right">
+                                        <div class="flex justify-end gap-3 whitespace-nowrap">
                                             @can('update', $task)
-                                                <a href="{{ route('tasks.edit', $task) }}" class="text-sm text-gray-500 hover:underline">Editar</a>
+                                                <a href="{{ route('tasks.edit', $task) }}" class="text-sm text-gray-500 hover:underline">Edit</a>
                                             @endcan
                                             @can('delete', $task)
-                                                <form action="{{ route('tasks.destroy', $task) }}" method="POST"
-                                                    onsubmit="return confirm('Eliminar aquesta tasca?')">
+                                                <form action="{{ route('tasks.destroy', $task) }}" method="POST" onsubmit="return confirm('Delete this task?')">
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button class="text-sm text-red-500 hover:underline">Eliminar</button>
+                                                    <button class="text-sm text-red-500 hover:underline">Delete</button>
                                                 </form>
                                             @endcan
                                         </div>
@@ -126,10 +126,9 @@
                     </table>
                 </div>
                 <div class="mt-6">
-                    {{ $tasks->appends(request()->query())->links() }}
+                    {{ $tasks->links() }}
                 </div>
             @endif
-
         </div>
     </div>
 </x-app-layout>

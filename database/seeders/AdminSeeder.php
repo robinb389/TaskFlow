@@ -10,11 +10,12 @@ class AdminSeeder extends Seeder
 {
     public function run(): void
     {
-        User::create([
+        $user = User::create([
             'name'     => 'Admin',
-            'email'    => 'admin@taskflow.com',
+            'email'    => 'admin@taskflow.test',
             'password' => Hash::make('password'),
-            'is_admin' => true,
         ]);
+
+        $user->forceFill(['is_admin' => true])->save();
     }
 }
