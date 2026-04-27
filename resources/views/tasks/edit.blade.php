@@ -91,13 +91,14 @@
                             <label class="mb-2 block text-sm font-medium text-gray-700">Tags</label>
                             <div class="flex flex-wrap gap-2">
                                 @foreach($tags as $tag)
-                                    <label class="flex cursor-pointer items-center gap-2">
+                                    <label class="tag-pill cursor-pointer select-none">
                                         <input type="checkbox" name="tag_ids[]" value="{{ $tag->id }}"
                                             {{ collect(old('tag_ids', $task->tags->pluck('id')->all()))->contains($tag->id) ? 'checked' : '' }}
-                                            class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
-                                        <span class="inline-flex items-center gap-1">
-                                            <span class="inline-block h-3 w-3 rounded-full border border-black/10" style="background-color: {{ $tag->color }}"></span>
-                                            <span class="text-sm text-gray-700">{{ $tag->name }}</span>
+                                            class="sr-only">
+                                        <span class="inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-sm font-medium transition-all duration-150"
+                                            data-color="{{ $tag->color }}">
+                                            <span class="inline-block h-2 w-2 rounded-full" style="background-color: {{ $tag->color }}"></span>
+                                            {{ $tag->name }}
                                         </span>
                                     </label>
                                 @endforeach
@@ -122,4 +123,30 @@
             </div>
         </div>
     </div>
+
+    <script>
+        document.querySelectorAll('.tag-pill').forEach(pill => {
+            const input = pill.querySelector('input');
+            const span = pill.querySelector('span');
+            const color = span.dataset.color;
+            const dot = span.querySelector('span');
+
+            const update = () => {
+                if (input.checked) {
+                    span.style.backgroundColor = color;
+                    span.style.borderColor = color;
+                    span.style.color = 'white';
+                    dot.style.backgroundColor = 'rgba(255,255,255,0.6)';
+                } else {
+                    span.style.backgroundColor = '';
+                    span.style.borderColor = color;
+                    span.style.color = color;
+                    dot.style.backgroundColor = color;
+                }
+            };
+
+            update();
+            input.addEventListener('change', update);
+        });
+    </script>
 </x-app-layout>
